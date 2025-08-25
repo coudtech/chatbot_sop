@@ -86,22 +86,7 @@ def ask():
         
         # First join content into text
         content_text = "\n".join([f"• {c}" for c in content_list])
-        
-        '''
-        def make_sql_links(text):
-            # Replace ```sql ... ``` blocks with link
-            def replacer(match):
-                sql_code = match.group(1).strip()
-                query_id = str(uuid.uuid4())  # unique id for query
-                # save sql to session or dict
-                if 'sql_queries' not in session:
-                    session['sql_queries'] = {}
-                session['sql_queries'][query_id] = sql_code
-                return f'<a href="{url_for("view_sql", query_id=query_id)}" target="_blank">View SQL Query</a>'
-            import re
-            return re.sub(r"```sql([\s\S]*?)```", replacer, text, flags=re.IGNORECASE)
-        '''
-
+   
         # Then replace sql blocks with links
         content_text = make_sql_links(content_text)
 
