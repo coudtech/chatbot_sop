@@ -1,388 +1,447 @@
+#index_sop.html
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-  <meta charset="UTF-8">
-  <title>SOP Chatbot</title>
-  <style>
-  
+<meta charset="UTF-8">
+<title>SOP Chatbot</title>
+<style>
+
     body {
+
       font-family: Arial, sans-serif;
+
       background: #f4f4f9;
+
       display: flex;
+
       justify-content: center;
+
       align-items: center;
+
       height: 100vh;
+
       margin: 0;
+
       flex-direction: column;
+
       padding: 0;
-      
+
     }
-    
-    .header 
-    {
+ 
+    .header {
+
       display: flex;
-      justify-content: flex-start;  /* left align */
-      
-      background: transparent;       /* ya apni background color */
+
+      justify-content: flex-start;
+
+      background: transparent;
+
       width: 100%;
-      position: fixed;               /* page scroll par bhi upar rahe */
+
+      position: fixed;
+
       top: 0;
-      left: 0%;
+
+      left: 0;
+
       z-index: 1000;
-    }
-    
 
-    
-    .bot-logo 
-    {
-      width: 100px;      /* logo width adjust karo */
-      height: 80px;      /* aspect ratio maintain rahe */
+    }
+ 
+    .bot-logo {
+
+      width: 100px;
+
+      height: 80px;
+
       display: inline-block;
+
       object-fit: contain;
-    }
 
+    }
+ 
     .chat-container {
-      width: 90%;              /* wider */
-      height: 75vh; 
+
+      width: 90%;
+
+      height: 75vh;
+
       background: #fff;
+
       border-radius: 15px;
+
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+
       display: flex;
+
       flex-direction: column;
+
       overflow: hidden;
+
       margin-top: 60px;
-      position: relative;  
+
+      position: relative;
+
       background-image: url('/static/ab.png');
+
       background-size: cover;
-      background-position: center;   /* Image ko center karega */
+
+      background-position: center;
+
       background-repeat: no-repeat;
+
     }
-    
+ 
     .chat-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.7); /* white overlay for text readability */
-    z-index: 0;
-  }
 
-  .chat-box, .input-area {
-    position: relative;
-    z-index: 1; /* make sure text/buttons stay above overlay */
-  }
-  
+      content: "";
+
+      position: absolute;
+
+      top: 0;
+
+      left: 0;
+
+      right: 0;
+
+      bottom: 0;
+
+      background: rgba(255, 255, 255, 0.7);
+
+      z-index: 0;
+
+    }
+ 
+    .chat-box, .input-area {
+
+      position: relative;
+
+      z-index: 1;
+
+    }
+ 
     .chat-box {
+
       flex: 1;
+
       padding: 15px;
+
       overflow-y: auto;
+
+      display: flex;
+
+      flex-direction: column;
+
     }
+ 
     .message {
-      margin: 8px 0;
+
+      margin: 5px 0;
+
       padding: 10px 15px;
+
       border-radius: 18px;
-      max-width: 75%;
+
+      max-width: 70%;
+
       line-height: 1.4;
-      white-space: pre-line;
+
+      word-wrap: break-word;
+
+      opacity: 0;
+
+      animation: fadeIn 0.3s forwards;
+
     }
-    .user {
-      background: #007bff;
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 5px;
-    }
-    .bot {
-      background: #e9ecef;
+ 
+    .message.bot {
+
+      background-color: #e5e5ea;
+
       color: #333;
+
       align-self: flex-start;
-      border-bottom-left-radius: 5px;
-    }
 
+      border-bottom-left-radius: 0;
+
+    }
+ 
+    .message.user {
+
+      background-color: #0078ff;
+
+      color: white;
+
+      align-self: flex-end;
+
+      border-bottom-right-radius: 0;
+
+    }
+ 
     .input-area {
+
       display: flex;
+
       padding: 10px;
+
       border-top: 1px solid #ddd;
+
+      background: #fff;
+
     }
+ 
     #userInput {
+
       flex: 1;
+
       padding: 10px;
+
       border: 1px solid #ccc;
+
       border-radius: 20px;
+
       outline: none;
+
     }
+ 
     button {
+
       margin-left: 10px;
+
       padding: 10px 20px;
+
       border: none;
-      background: #007bff;
+
+      background: #0078ff;
+
       color: white;
+
       border-radius: 20px;
+
       cursor: pointer;
+
     }
+ 
     button:hover {
+
       background: #0056b3;
+
     }
+ 
     .options {
+
       display: flex;
+
       flex-wrap: wrap;
+
       gap: 10px;
-      margin-top: 5px;
+
+      margin: 10px 0;
+
+      align-self: flex-start;
+
     }
+ 
     .option-btn {
-      background: #17a2b8;
+
+      background: #28a745;
+
       color: white;
+
       padding: 6px 12px;
+
       border: none;
+
       border-radius: 12px;
+
       cursor: pointer;
+
       font-size: 14px;
+
     }
+ 
     .option-btn:hover {
-      background: #11707f;
+
+      background-color: #1c5d24;
+
     }
+ 
+    @keyframes fadeIn {
 
-  .message {
-    max-width: 80%;
-    padding: 5px;
-    margin: 5px;
-    border-radius: 10px;
-    word-wrap: break-word;
-    display: inline-block;
-    clear: both;
-  }
+      to { opacity: 1; }
 
-  .message.bot {
-    background-color: #e5e5ea;
-    float: left;
-    text-align: left;
-    border-bottom-left-radius: 0;
-  }
+    }
+ 
+    pre code {
 
-  .message.user {
-    background-color: #0078ff;
-    color: white;
-    float: right;
-    text-align: right;
-    border-bottom-right-radius: 0;
-  }
+      display: block;
 
-  .options {
-    margin: 10px 0;
-    clear: both;
-    text-align: left;
-  }
+      padding: 10px;
 
-  .option-btn {
-    margin: 3px;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    background-color: #28a745;
-    cursor: pointer;
-  }
+      background: #2d2d2d;
 
-  .option-btn:hover {
-    background-color: #ddd;
-  }
+      color: #f8f8f2;
 
-  .typing {
-    font-style: italic;
-    color: #888;
-    margin: 5px;
-    clear: both;
-    float: left;
-  }
-  
-  pre code {
-  display: block;
-  padding: 10px;
-  background: #2d2d2d;
-  color: #f8f8f2;
-  border-radius: 8px;
-  overflow-x: auto;
-  font-size: 14px;
-}
+      border-radius: 8px;
 
-.message strong {
-  font-weight: bold;
-  color: #222;
-}
+      overflow-x: auto;
 
+      font-size: 14px;
 
-.chat-box, .input-area {
-  position: relative;
-  z-index: 1;
-}
+    }
+ 
+    .message strong {
 
-  </style>
-    
+      font-weight: bold;
+
+      color: #222;
+
+    }
+</style>
 </head>
 <body>
-
-    <header class="header">
-    <img src="/static/sopi.jpg" alt="SOPi" class="bot-logo">
-    </header>
-  
+<header class="header">
+<img src="/static/sopi.jpg" alt="SOPi" class="bot-logo">
+</header>
+ 
   <div class="chat-container">
-  <div class="chat-box" id="chatBox"></div>
-  <div class="input-area">
-      <input type="text" id="userInput" placeholder="Type your message..." />
-      <button onclick="sendMessage()">Ask</button>
-    </div>
-  </div>
-    
+<div class="chat-box" id="chatBox"></div>
+<div class="input-area">
+<input type="text" id="userInput" placeholder="Type your message..." />
+<button onclick="sendMessage()">Ask</button>
+</div>
+</div>
+ 
+  <script>
 
+    function formatBotResponse(text) {
 
-<script>
-function formatBotResponse(text) {
-  // Bold keywords
-  const keywords = [
-    "Source:", "Pre Checks:", "Open Line Item Query:",
-    "Siebel Status Query:", "Line Item Query:",
-    "OPEN SIEBEL PUTTY", "execute below command:"
-  ];
-  
-  keywords.forEach(word => {
-    text = text.replace(new RegExp(word, "gi"), `<strong>${word}</strong>`);
-  });
+      const keywords = [
 
-  // Detect SQL blocks and wrap with Prism syntax highlighting
-  text = text.replace(/```sql([\s\S]*?)```/gi, 
-    (match, code) => `<pre><code class="language-sql">${code.trim()}</code></pre>`
-  );
+        "Source:", "Pre Checks:", "Open Line Item Query:",
 
-  return text;
-}
+        "Siebel Status Query:", "Line Item Query:",
 
-function appendMessage(sender, text) {
-  const chatBox = document.getElementById("chatBox");
-  const msg = document.createElement("div");
-  msg.className = "message " + sender;
-  msg.innerText = text;
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  return msg;
-}
+        "OPEN SIEBEL PUTTY", "execute below command:"
 
-function appendTyping() {
-  const chatBox = document.getElementById("chatBox");
-  const typing = document.createElement("div");
-  typing.className = "typing";
-  typing.innerText = "Bot is typing...";
-  typing.id = "typingIndicator";
-  chatBox.appendChild(typing);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+      ];
 
-function removeTyping() {
-  const typing = document.getElementById("typingIndicator");
-  if (typing) typing.remove();
-}
+      keywords.forEach(word => {
 
-function showTypingEffect(message, msgDiv) {
-  msgDiv.innerHTML = "";
-  let i = 0;
-  function typing() {
-    if (i < message.length) {
-      msgDiv.innerHTML += message.charAt(i);
-      i++;
-      setTimeout(typing, 20);
-    } else {
-      Prism.highlightAll();  // highlight after typing is done
+        text = text.replace(new RegExp(word, "gi"), `<strong>${word}</strong>`);
+
+      });
+
+      text = text.replace(/```sql([\s\S]*?)```/gi, 
+
+        (match, code) => `<pre><code class="language-sql">${code.trim()}</code></pre>`
+
+      );
+
+      return text;
+
     }
-  }
-  typing();
-}
+ 
+    function appendMessage(sender, text) {
 
-function addButtons(buttons) {
-  const chatBox = document.getElementById("chatBox");
-  const wrapper = document.createElement("div");
-  wrapper.className = "options";
-  buttons.forEach(btn => {
-    const b = document.createElement("button");
-    b.className = "option-btn";
-    b.innerText = btn.text;
-    b.onclick = () => {
-      appendMessage("user", btn.text);
-      sendToServer(btn.value);
-      // don't remove old buttons
-    };
-    wrapper.appendChild(b);
-  });
-  chatBox.appendChild(wrapper);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+      const chatBox = document.getElementById("chatBox");
 
-function sendMessage() {
-  const input = document.getElementById("userInput");
-  const userText = input.value.trim();
-  if (userText === "") return;
-  appendMessage("user", userText);
-  input.value = "";
-  sendToServer(userText);
-}
+      const msg = document.createElement("div");
 
-function sendToServer(query) {
-  appendTyping();
-  fetch("/ask", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: query })
-  })
-  .then(res => res.json())
-  .then(data => {
-    setTimeout(() => {
-      removeTyping();
+      msg.className = "message " + sender;
 
-      // ✅ if response has SQL → render directly with Prism
-      if (data.response.includes("```sql")) {
-        const msgDiv = appendMessage("bot", "");
-        msgDiv.innerHTML = formatBotResponse(data.response);
-        Prism.highlightAll();
-      } 
-      else {
-        // ✅ for normal text: typing effect (but allow bold tags)
-        const msgDiv = appendMessage("bot", "");
-        const formatted = formatBotResponse(data.response);
+      msg.innerHTML = formatBotResponse(text);
 
-        // extract pure text for typing effect
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = formatted;
-        const pureText = tempDiv.innerText;
+      chatBox.appendChild(msg);
 
-        let i = 0;
-        msgDiv.innerHTML = "";
-        function typing() {
-          if (i < pureText.length) {
-            msgDiv.innerText = pureText.slice(0, i + 1);
-            i++;
-            setTimeout(typing, 20);
-          } else {
-            // after typing finished → replace with formatted HTML
-            msgDiv.innerHTML = formatted;
-          }
-        }
-        typing();
-      }
+      chatBox.scrollTop = chatBox.scrollHeight;
 
-      if (data.buttons) {
-        setTimeout(() => addButtons(data.buttons), data.response.length * 20 + 500);
-      }
-    }, 1000);
-  });
-}
+      return msg;
 
-
-document.getElementById("userInput")
-  .addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      sendMessage();
     }
-  });
+ 
+    function addButtons(buttons) {
+
+      const chatBox = document.getElementById("chatBox");
+
+      const wrapper = document.createElement("div");
+
+      wrapper.className = "options";
+
+      buttons.forEach(btn => {
+
+        const b = document.createElement("button");
+
+        b.className = "option-btn";
+
+        b.innerText = btn.text;
+
+        b.onclick = () => {
+
+          appendMessage("user", btn.text);
+
+          sendToServer(btn.value);
+
+        };
+
+        wrapper.appendChild(b);
+
+      });
+
+      chatBox.appendChild(wrapper);
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+    }
+ 
+    function sendMessage() {
+
+      const input = document.getElementById("userInput");
+
+      const userText = input.value.trim();
+
+      if (!userText) return;
+
+      appendMessage("user", userText);
+
+      input.value = "";
+
+      sendToServer(userText);
+
+    }
+ 
+    function sendToServer(query) {
+
+      fetch("/ask", {
+
+        method: "POST",
+
+        headers: { "Content-Type": "application/json" },
+
+        body: JSON.stringify({ query: query })
+
+      })
+
+      .then(res => res.json())
+
+      .then(data => {
+
+        appendMessage("bot", data.response);
+
+        if (data.buttons) addButtons(data.buttons);
+
+      });
+
+    }
+ 
+    document.getElementById("userInput").addEventListener("keypress", function (e) {
+
+      if (e.key === "Enter") sendMessage();
+
+    });
 </script>
-
 </body>
 </html>
+
+ 
