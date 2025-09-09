@@ -1,445 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SOP Chatbot</title>
-<style>
-
+  <meta charset="UTF-8">
+  <title>SOP Chatbot</title>
+  <style>
     body {
-
       font-family: Arial, sans-serif;
-
       background: #f4f4f9;
-
       display: flex;
-
       justify-content: center;
-
       align-items: center;
-
       height: 100vh;
-
       margin: 0;
-
       flex-direction: column;
-
       padding: 0;
-
     }
- 
+
     .header {
-
       display: flex;
-
       justify-content: flex-start;
-
       background: transparent;
-
       width: 100%;
-
       position: fixed;
-
       top: 0;
-
       left: 0;
-
       z-index: 1000;
-
     }
- 
+
     .bot-logo {
-
       width: 100px;
-
       height: 80px;
-
       display: inline-block;
-
       object-fit: contain;
-
     }
- 
+
     .chat-container {
-
       width: 90%;
-
       height: 75vh;
-
       background: #fff;
-
       border-radius: 15px;
-
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-
       display: flex;
-
       flex-direction: column;
-
       overflow: hidden;
-
       margin-top: 60px;
-
       position: relative;
-
       background-image: url('/static/ab.png');
-
       background-size: cover;
-
       background-position: center;
-
       background-repeat: no-repeat;
-
     }
- 
+
     .chat-container::before {
-
       content: "";
-
       position: absolute;
-
       top: 0;
-
       left: 0;
-
       right: 0;
-
       bottom: 0;
-
       background: rgba(255, 255, 255, 0.7);
-
       z-index: 0;
-
     }
- 
+
     .chat-box, .input-area {
-
       position: relative;
-
       z-index: 1;
-
     }
- 
+
     .chat-box {
-
       flex: 1;
-
       padding: 15px;
-
       overflow-y: auto;
-
       display: flex;
-
       flex-direction: column;
-
     }
- 
+
     .message {
-
       margin: 5px 0;
-
       padding: 10px 15px;
-
       border-radius: 18px;
-
       max-width: 70%;
-
       line-height: 1.4;
-
       word-wrap: break-word;
-
       opacity: 0;
-
       animation: fadeIn 0.3s forwards;
-
     }
- 
+
     .message.bot {
-
       background-color: #e5e5ea;
-
       color: #333;
-
       align-self: flex-start;
-
       border-bottom-left-radius: 0;
-
     }
- 
+
     .message.user {
-
       background-color: #0078ff;
-
       color: white;
-
       align-self: flex-end;
-
       border-bottom-right-radius: 0;
-
     }
- 
+
     .input-area {
-
       display: flex;
-
       padding: 10px;
-
       border-top: 1px solid #ddd;
-
       background: #fff;
-
     }
- 
+
     #userInput {
-
       flex: 1;
-
       padding: 10px;
-
       border: 1px solid #ccc;
-
       border-radius: 20px;
-
       outline: none;
-
     }
- 
+
     button {
-
       margin-left: 10px;
-
       padding: 10px 20px;
-
       border: none;
-
       background: #0078ff;
-
       color: white;
-
       border-radius: 20px;
-
       cursor: pointer;
-
     }
- 
+
     button:hover {
-
       background: #0056b3;
-
     }
- 
+
     .options {
-
       display: flex;
-
       flex-wrap: wrap;
-
       gap: 10px;
-
       margin: 10px 0;
-
       align-self: flex-start;
-
     }
- 
+
     .option-btn {
-
       background: #28a745;
-
       color: white;
-
       padding: 6px 12px;
-
       border: none;
-
       border-radius: 12px;
-
       cursor: pointer;
-
       font-size: 14px;
-
     }
- 
+
     .option-btn:hover {
-
       background-color: #1c5d24;
-
     }
- 
+
     @keyframes fadeIn {
-
       to { opacity: 1; }
-
     }
- 
+
     pre code {
-
       display: block;
-
       padding: 10px;
-
       background: #2d2d2d;
-
       color: #f8f8f2;
-
       border-radius: 8px;
-
       overflow-x: auto;
-
       font-size: 14px;
-
     }
- 
+
     .message strong {
-
       font-weight: bold;
-
       color: #222;
-
     }
-</style>
+  </style>
 </head>
 <body>
-<header class="header">
-<img src="/static/sopi.jpg" alt="SOPi" class="bot-logo">
-</header>
- 
+  <header class="header">
+    <img src="/static/sopi.jpg" alt="SOPi" class="bot-logo">
+  </header>
+
   <div class="chat-container">
-<div class="chat-box" id="chatBox"></div>
-<div class="input-area">
-<input type="text" id="userInput" placeholder="Type your message..." />
-<button onclick="sendMessage()">Ask</button>
-</div>
-</div>
- 
+    <div class="chat-box" id="chatBox"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Ask</button>
+    </div>
+  </div>
+
   <script>
-
     function formatBotResponse(text) {
-
       const keywords = [
-
         "Source:", "Pre Checks:", "Open Line Item Query:",
-
         "Siebel Status Query:", "Line Item Query:",
-
         "OPEN SIEBEL PUTTY", "execute below command:"
-
       ];
-
       keywords.forEach(word => {
-
         text = text.replace(new RegExp(word, "gi"), `<strong>${word}</strong>`);
-
       });
-
       text = text.replace(/```sql([\s\S]*?)```/gi, 
-
         (match, code) => `<pre><code class="language-sql">${code.trim()}</code></pre>`
-
       );
-
       return text;
-
     }
- 
+
     function appendMessage(sender, text) {
-
       const chatBox = document.getElementById("chatBox");
-
       const msg = document.createElement("div");
-
       msg.className = "message " + sender;
-
       msg.innerHTML = formatBotResponse(text);
-
       chatBox.appendChild(msg);
-
       chatBox.scrollTop = chatBox.scrollHeight;
-
       return msg;
-
     }
- 
+
     function addButtons(buttons) {
-
       const chatBox = document.getElementById("chatBox");
-
       const wrapper = document.createElement("div");
-
       wrapper.className = "options";
-
       buttons.forEach(btn => {
-
         const b = document.createElement("button");
-
         b.className = "option-btn";
-
         b.innerText = btn.text;
-
         b.onclick = () => {
-
           appendMessage("user", btn.text);
-
           sendToServer(btn.value);
-
         };
-
         wrapper.appendChild(b);
-
       });
-
       chatBox.appendChild(wrapper);
-
       chatBox.scrollTop = chatBox.scrollHeight;
-
     }
- 
+
     function sendMessage() {
-
       const input = document.getElementById("userInput");
-
       const userText = input.value.trim();
-
       if (!userText) return;
-
       appendMessage("user", userText);
-
       input.value = "";
-
       sendToServer(userText);
-
     }
- 
+
     function sendToServer(query) {
-
       fetch("/ask", {
-
         method: "POST",
-
         headers: { "Content-Type": "application/json" },
-
         body: JSON.stringify({ query: query })
-
       })
-
       .then(res => res.json())
-
       .then(data => {
-
         appendMessage("bot", data.response);
-
         if (data.buttons) addButtons(data.buttons);
-
       });
-
     }
- 
+
     document.getElementById("userInput").addEventListener("keypress", function (e) {
-
       if (e.key === "Enter") sendMessage();
-
     });
-</script>
+  </script>
 </body>
 </html>
-
- 
