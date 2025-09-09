@@ -64,18 +64,20 @@ def home():
 
 
 def detect_intent(query):
-    q = query.lower()
+    q = query.lower().strip()
 
     # Special rule: help me/us with assetisation → How
-    if re.search(r"\b(help|assist|support|need|give|want).*(assetisation|assetize|assetise|hbb cancellation|HBB Cancellation)\b", q):
+    #if re.search(r"\b(help|assist|support|need|give|want|assetization|assetisation|hbb cancellation|cancellation).*(assetisation|assetize|assetization|assetise|hbb cancellation|HBB Cancellation|cancellation)\b", q):
+    #    return "How"
+    if re.search(r"\b(assetis(?:ation|ation)|assetis(?:e|e)|assetiz(?:e|ation)|hbb\s*cancellation)\b", q, re.IGNORECASE):
         return "How"
 
     # Prioritize mutually exclusive intent detection
     if any(word in q for word in ["when", "time", "timing"]):
         return "When"
-    elif any(word in q for word in ["why", "what", "reason", "purpose", "need"]):
+    elif any(word in q for word in ["why", "what", "reason", "purpose"]):
         return "Why"
-    elif any(word in q for word in ["how", "perform", "do", "action", "steps"]):
+    elif any(word in q for word in ["how", "perform", "do", "action", "steps", "assist", "support", "give", "need", "want"]):
         return "How"
     else:
         return "General"
@@ -104,8 +106,10 @@ def ask():
     # Check if bot is waiting for "Do you need more assistance?"
     if session.get('awaiting_more', False):
         if user_query.lower() in ["no", "nope", "nah", "not really"]:
-            session['awaiting_more'] = False
+            session.clear()
             return jsonify({"response": "Thank you for contacting us! Have a great day 😊"})
+            #session['awaiting_more'] = False
+            
         else:
             session['awaiting_more'] = False
             # continue normal processing for "Yes" or other queries
@@ -156,14 +160,30 @@ def ask():
         response_text = f"{content_text}<br><br>Do you need more assistance?"
         session['awaiting_more'] = True
         return jsonify({"response": response_text})
+        
+     # --- FIX 1: Direct SOP name check BEFORE embeddings ---
+    direct_sop = None
+    for sop in df['SOP Name'].unique():
+        if sop.lower() in user_query.lower():
+            direct_sop = sop
+            break
 
-    # Normal SOP intent handling with embeddings
-    query_emb = embed_model.encode(user_query, convert_to_tensor=True)
-    df['similarity'] = df['embedding'].apply(lambda x: util.cos_sim(query_emb, x).item())
-    sop_name = df.sort_values(by='similarity', ascending=False).iloc[0]['SOP Name']
+    if direct_sop:
+        sop_name = direct_sop
+    else:
+
+        # Normal SOP intent handling with embeddings
+        query_emb = embed_model.encode(user_query, convert_to_tensor=True)
+        df['similarity'] = df['embedding'].apply(lambda x: util.cos_sim(query_emb, x).item())
+        sop_name = df.sort_values(by='similarity', ascending=False).iloc[0]['SOP Name']
     session['sop_name'] = sop_name
-
-    intent_type = detect_intent(user_query)
+    
+    # --- FIX 2: If direct SOP name found, always use How intent ---
+    if direct_sop:
+        intent_type = "How"
+    else:
+        intent_type = detect_intent(user_query)
+    
     session['intent_type'] = intent_type
 
     filtered = df[(df['SOP Name'] == sop_name) & (df['Intent Type'] == intent_type)]
